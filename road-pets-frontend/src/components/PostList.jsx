@@ -22,7 +22,7 @@ const PostList = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/posts');
+        const response = await axios.get('https://roadpets.onrender.com/api/posts');
         setPosts(response.data);
         setFilteredPosts(response.data);
       } catch (error) {
@@ -128,7 +128,7 @@ const PostList = () => {
                       >
                         <div className="image-wrapper">
                           <img
-                            src={`http://localhost:5000/${img}`}
+                            src={`https://roadpets.onrender.com/${img}`}
                             alt={`Post image ${index + 1}`}
                             className="d-block w-100 rounded"
                           />
