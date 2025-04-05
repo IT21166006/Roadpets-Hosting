@@ -67,7 +67,7 @@ app.use('/api/posts', postRoutes);
 // Add this to your existing middleware setup
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
