@@ -55,7 +55,7 @@ function Profile() {
 
             try {
                 // Fetch user profile
-                const userResponse = await axios.get('http://localhost:5000/api/protected/dashboard', {
+                const userResponse = await axios.get('https://roadpets.onrender.com/api/protected/dashboard', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -70,7 +70,7 @@ function Profile() {
                 }
 
                 // Fetch user's posts
-                const postsResponse = await axios.get('http://localhost:5000/api/posts/user', {
+                const postsResponse = await axios.get('https://roadpets.onrender.com/api/posts/user', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -116,7 +116,7 @@ function Profile() {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.put(
-                `http://localhost:5000/api/posts/${currentPost._id}`,
+                `https://roadpets.onrender.com/api/posts/${currentPost._id}`,
                 formData,
                 {
                     headers: {
@@ -140,7 +140,7 @@ function Profile() {
         if (window.confirm('Are you sure you want to delete this post?')) {
             try {
                 const token = localStorage.getItem('token');
-                await axios.delete(`http://localhost:5000/api/posts/${postId}`, {
+                await axios.delete(`https://roadpets.onrender.com/api/posts/${postId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -257,7 +257,7 @@ function Profile() {
                                 {post.images && post.images.length > 0 && (
                                     <div className="mb-3">
                                         <img
-                                            src={`http://localhost:5000/${post.images[0]}`}
+                                            src={`https://roadpets.onrender.com/${post.images[0]}`}
                                             alt="Post"
                                             className="img-fluid rounded"
                                             style={{ maxHeight: '200px', objectFit: 'cover' }}
