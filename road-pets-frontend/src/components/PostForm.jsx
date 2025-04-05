@@ -29,7 +29,7 @@ const PostForm = () => {
             }
 
             try {
-                const response = await axios.get('http://localhost:5000/api/protected/dashboard', {
+                const response = await axios.get('https://roadpets.onrender.com/api/protected/dashboard', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -173,7 +173,7 @@ const PostForm = () => {
             }
 
             const response = await axios.post(
-                'http://localhost:5000/api/posts',
+                'https://roadpets.onrender.com/api/posts',
                 formData,
                 {
                     headers: {
