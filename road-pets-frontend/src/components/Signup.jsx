@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import '../CSS/signup.css';
-import Logo from "../asserts/logo.png";
+
 
 function Signup() {
     const [username, setUsername] = useState('');
@@ -9,17 +9,33 @@ function Signup() {
     const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
 
+    const validateForm = () => {
+        if (!username || !email || !password) {
+            setError('All fields are required');
+            return false;
+        }
+        // Additional validation logic can be added here
+        return true;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!validateForm()) return;
+
         try {
-            await axios.post('https://roadpets.onrender.com/api/auth/register', {
+            const response = await axios.post('https://roadpets.onrender.com/api/auth/register', {
                 username,
                 email,
                 password,
             });
+            console.log('Signup successful:', response);
             window.location.href = '/login';
         } catch (error) {
-            setError('Error registering user');
+            if (error.response) {
+                setError(error.response.data.message || 'Error registering user');
+            } else {
+                setError('Error registering user');
+            }
         }
     };
 
@@ -29,10 +45,10 @@ function Signup() {
                 <div className="col-md-6">
                     <div className="card shadow" style={{ borderColor: '#ff914d' }}>
                         <div className="card-body">
-                        <div className="d-flex justify-content-center">
-                            <img src={Logo} width="200" alt="Logo" />
-                        </div>
-                            <h2 className=" mb-4" style={{ color: '#ff914d' }}>Signup</h2>
+                            <div className="d-flex justify-content-center">
+                                
+                            </div>
+                            <h2 className="mb-4" style={{ color: '#ff914d' }}>Signup</h2>
                             <form onSubmit={handleSubmit}>
                                 <div className="mb-3">
                                     <label className="form-label" style={{ color: '#000' }}>Username</label>
@@ -95,11 +111,8 @@ function Signup() {
                                 <br></br>
                                 <br></br>
                                 <div className="d-flex justify-content-center">
-                                <p>If you already have an account, <a href="/login">Login</a></p>
+                                    <p>If you already have an account, <a href="/login">Login</a></p>
                                 </div>
-                            
-                        
-                                
                             </form>
                         </div>
                     </div>
