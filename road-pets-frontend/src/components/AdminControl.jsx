@@ -16,7 +16,7 @@ const AdminControl = () => {
     useEffect(() => {
         const fetchPosts = async () => {
             try {
-                const response = await axios.get('https://roadpets.onrender.com/api/posts');
+                const response = await axios.get('https://roadpets-hosting-h9gv.onrender.com/api/posts');
                 setPosts(response.data);
             } catch (error) {
                 console.error('Error fetching posts:', error);
@@ -28,7 +28,7 @@ const AdminControl = () => {
     // Handle delete post
     const handleDelete = async (id) => {
         try {
-            await axios.delete(`https://roadpets.onrender.com/api/posts/${id}`);
+            await axios.delete(`https://roadpets-hosting-h9gv.onrender.com/api/posts/${id}`);
             setPosts(posts.filter(post => post._id !== id));
             alert('Post deleted successfully!');
         } catch (error) {
@@ -52,7 +52,7 @@ const AdminControl = () => {
     const handleEditSubmit = async (e) => {
         e.preventDefault();
         try {
-            await axios.put(`https://roadpets.onrender.com/api/posts/${editingPost}`, formData);
+            await axios.put(`https://roadpets-hosting-h9gv.onrender.com/api/posts/${editingPost}`, formData);
             setPosts(posts.map(post => (post._id === editingPost ? { ...post, ...formData } : post)));
             setEditingPost(null);
             alert('Post updated successfully!');
@@ -97,7 +97,7 @@ const AdminControl = () => {
                             <td>{post.phoneNumber}</td>
                             <td>{post.location}</td>
                             <td>{post.images.map((img, index) => (
-                                <img key={index} src={`https://roadpets.onrender.com/${img}`} alt={`Post image ${index}`} width="50" />
+                                <img key={index} src={`https://roadpets-hosting-h9gv.onrender.com/${img}`} alt={`Post image ${index}`} width="50" />
                             ))}</td>
                             <td>
                                 <button onClick={() => handleEdit(post)}>Edit</button>
