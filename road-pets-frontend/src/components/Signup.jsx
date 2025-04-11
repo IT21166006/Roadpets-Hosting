@@ -23,7 +23,7 @@ function Signup() {
         if (!validateForm()) return;
 
         try {
-            const response = await axios.post('https://roadpets.onrender.com/api/auth/register', {
+            const response = await axios.post('https://roadpets-hosting-h9gv.onrender.com/api/auth/register', {
                 username,
                 email,
                 password,
