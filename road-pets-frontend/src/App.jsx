@@ -12,6 +12,7 @@ import Login from './components/Login';
 import Signup from './components/Signup';
 import Profile from './components/Profile';
 import AdminDashboard from './components/AdminDashboard';
+import Petdashboard from './components/Petdashboard'
 
 // Protected Route component
 const ProtectedRoute = ({ children }) => {
@@ -31,6 +32,11 @@ function App() {
           </ProtectedRoute>
         } />
         <Route path="/gallery" element={<Gallery />} />
+        <Route path="/petdashboard" element={
+          <ProtectedRoute>
+            <Petdashboard />
+          </ProtectedRoute>
+        } />
         <Route path="/banner" element={<Banner />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
