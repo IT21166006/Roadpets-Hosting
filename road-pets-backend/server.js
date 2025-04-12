@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import postRoutes from './routes/posts.js';
+import petRoutes from './routes/pet.js'
 import cookieParser from "cookie-parser";
 import authRoutes from "./routes/auth.js";
 import protectedRoutes from "./routes/protected.js";
@@ -21,7 +22,7 @@ const __dirname = dirname(__filename);
 
 // CORS Configuration with more specific settings
 app.use(cors({
-    origin: ['https://rad-lokum-25c207.netlify.app'],
+    origin: ['http://localhost:5173'],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
     allowedHeaders: ["Origin", "Content-Type", "Accept", "Authorization"],
@@ -63,11 +64,12 @@ mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopol
 app.use('/api/auth', authRoutes);
 app.use('/api/protected', protectedRoutes);
 app.use('/api/posts', postRoutes);
+app.use('/api/pets', petRoutes);
 
 // Add this to your existing middleware setup
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-const PORT = process.env.PORT || 10000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
