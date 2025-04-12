@@ -9,7 +9,7 @@ function AdminDashboard() {
         if (!token) {
             window.location.href = '/login';
         } else {
-            axios.get('https://roadpets-hosting-h9gv.onrender.com/api/protected/admin', {
+            axios.get('http://localhost:5000/api/protected/admin', {
                 headers: { Authorization: `Bearer ${token}` },
             })
             .then((response) => {
