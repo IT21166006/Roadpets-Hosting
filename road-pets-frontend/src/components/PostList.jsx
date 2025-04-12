@@ -22,7 +22,9 @@ const PostList = () => {
   useEffect(() => {
     const fetchPosts = async () => {
       try {
-        const response = await axios.get('https://roadpets-hosting-h9gv.onrender.com/api/posts');
+        const response = await axios.get('http://localhost:5000/api/posts');
+        console.log('Fetched posts:', response.data);
+        console.log('First post images:', response.data[0]?.images);
         setPosts(response.data);
         setFilteredPosts(response.data);
       } catch (error) {
@@ -72,104 +74,118 @@ const PostList = () => {
       
       <br></br>
 
-
-
       {/* Search Bar */}
-      <div className="mb-5 text-center d-flex justify-content-center "> {/* Centering the search bar and button */}
+      <div className="mb-5 text-center d-flex justify-content-center ">
         <input
           type="text"
-          className="form-control w-50 " // Reduced width
+          className="form-control w-50 "
           placeholder="Search by location"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          style={{ backgroundColor: 'transparent', borderColor: 'lightgray' }} // Made transparent
+          style={{ backgroundColor: 'transparent', borderColor: 'lightgray' }}
         />
         <div className='px-3'> </div>
-        <button className="btn btn-lg" onClick={handleSearch} style={{ backgroundColor: '#ff914d', borderColor: '#ff914d' }}>Search</button> {/* Changed button color to #ff914d */}
+        <button className="btn btn-lg" onClick={handleSearch} style={{ backgroundColor: '#ff914d', borderColor: '#ff914d' }}>Search</button>
       </div>
 
-
-
       <div className="row">
-        {currentPosts.map((post) => (
-          <div key={post._id} className="col-md-3 mb-4">
-            <div className="card shadow-sm">
-              <div className="card-body">
-                <h5 className="card-title"><PersonIcon/>{post.name}</h5>
-                <br></br>
-                
-                {/* Bootstrap Carousel for Images */}
-                <div 
-                  id={`carousel-${post._id}`} 
-                  className="carousel slide" 
-                  data-bs-ride="false"
-                  data-bs-interval="false"
-                >
-                  {post.images.length > 1 && (
-                    <div className="carousel-indicators">
-                      {post.images.map((_, index) => (
-                        <button
-                          key={index}
-                          type="button"
-                          data-bs-target={`#carousel-${post._id}`}
-                          data-bs-slide-to={index}
-                          className={index === 0 ? "active" : ""}
-                          aria-label={`Slide ${index + 1}`}
-                        ></button>
-                      ))}
+        {currentPosts.map((post) => {
+          console.log('Rendering post:', post._id);
+          console.log('Post images:', post.images);
+          return (
+            <div key={post._id} className="col-md-3 mb-4">
+              <div className="card shadow-sm">
+                <div className="card-body">
+                  <h5 className="card-title"><PersonIcon/>{post.name}</h5>
+                  <br></br>
+                  
+                  {/* Bootstrap Carousel for Images */}
+                  {post.images && post.images.length > 0 ? (
+                    <div 
+                      id={`carousel-${post._id}`} 
+                      className="carousel slide" 
+                      data-bs-ride="false"
+                      data-bs-interval="false"
+                    >
+                      {post.images.length > 1 && (
+                        <div className="carousel-indicators">
+                          {post.images.map((_, index) => (
+                            <button
+                              key={index}
+                              type="button"
+                              data-bs-target={`#carousel-${post._id}`}
+                              data-bs-slide-to={index}
+                              className={index === 0 ? "active" : ""}
+                              aria-label={`Slide ${index + 1}`}
+                            ></button>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="carousel-inner">
+                        {post.images.map((img, index) => (
+                          <div 
+                            key={index} 
+                            className={`carousel-item ${index === 0 ? 'active' : ''}`}
+                          >
+                            <div className="image-wrapper">
+                              <img
+                                src={img}
+                                alt={`Post image ${index + 1}`}
+                                className="d-block w-100 rounded"
+                                onError={(e) => {
+                                  console.error('Image failed to load:', e);
+                                  e.target.src = 'https://via.placeholder.com/400x500?text=Image+Not+Found';
+                                }}
+                              />
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {post.images.length > 1 && (
+                        <>
+                          <button
+                            className="carousel-control-prev"
+                            type="button"
+                            data-bs-target={`#carousel-${post._id}`}
+                            data-bs-slide="prev"
+                          >
+                            <span className="carousel-control-prev-icon"></span>
+                            <span className="visually-hidden">Previous</span>
+                          </button>
+                          <button
+                            className="carousel-control-next"
+                            type="button"
+                            data-bs-target={`#carousel-${post._id}`}
+                            data-bs-slide="next"
+                          >
+                            <span className="carousel-control-next-icon"></span>
+                            <span className="visually-hidden">Next</span>
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  ) : (
+                    <div className="image-wrapper">
+                      <img
+                        src="https://via.placeholder.com/400x500?text=No+Image"
+                        alt="No image available"
+                        className="d-block w-100 rounded"
+                      />
                     </div>
                   )}
 
-                  <div className="carousel-inner">
-                    {post.images.map((img, index) => (
-                      <div 
-                        key={index} 
-                        className={`carousel-item ${index === 0 ? 'active' : ''}`}
-                      >
-                        <div className="image-wrapper">
-                          <img
-                            src={`https://roadpets-hosting-h9gv.onrender.com/${img}`}
-                            alt={`Post image ${index + 1}`}
-                            className="d-block w-100 rounded"
-                          />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {post.images.length > 1 && (
-                    <>
-                      <button
-                        className="carousel-control-prev"
-                        type="button"
-                        data-bs-target={`#carousel-${post._id}`}
-                        data-bs-slide="prev"
-                      >
-                        <span className="carousel-control-prev-icon"></span>
-                        <span className="visually-hidden">Previous</span>
-                      </button>
-                      <button
-                        className="carousel-control-next"
-                        type="button"
-                        data-bs-target={`#carousel-${post._id}`}
-                        data-bs-slide="next"
-                      >
-                        <span className="carousel-control-next-icon"></span>
-                        <span className="visually-hidden">Next</span>
-                      </button>
-                    </>
-                  )}
+                  {/* Post Details */}
+                  <br></br>
+                  <p className="card-text"><strong><PhoneIcon/> Phone: </strong> {post.phoneNumber}</p>
+                  <p className="card-text"><strong><LocationOnIcon/> Location: </strong> {post.location}</p>
+                  <p className="card-text"><strong><LightbulbCircleIcon/> Description:</strong> {post.description}</p>
                 </div>
-
-                {/* Post Details - Moved outside of carousel */}
-                <br></br>
-                <p className="card-text"><strong><PhoneIcon/> Phone: </strong> {post.phoneNumber}</p>
-                <p className="card-text"><strong><LocationOnIcon/> Location: </strong> {post.location}</p>
-                <p className="card-text"><strong><LightbulbCircleIcon/> Description:</strong> {post.description}</p>
               </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
       {/* Pagination Controls */}
       {totalPages > 1 && (
