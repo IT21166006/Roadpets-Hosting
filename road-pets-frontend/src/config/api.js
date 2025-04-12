@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 // Get the API base URL from environment variable or use default
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'https://roadpets-hosting-h9gv.onrender.com';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
 console.log('API Base URL:', API_BASE_URL); // Debug log
 
