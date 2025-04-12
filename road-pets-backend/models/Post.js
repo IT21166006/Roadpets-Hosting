@@ -18,7 +18,8 @@ const postSchema = new mongoose.Schema({
         required: true
     },
     images: [{
-        type: String
+        type: String,  // This will store base64 strings
+        required: true
     }],
     user: {
         type: mongoose.Schema.Types.ObjectId,
