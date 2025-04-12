@@ -1,54 +1,39 @@
 import express from 'express';
-import multer from 'multer';
 import Post from '../models/Post.js';
 import { authenticateToken } from '../middleware/auth.js';
-import path from 'path';
 
 const router = express.Router();
 
-// Configure multer
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, 'uploads/');
-    },
-    filename: (req, file, cb) => {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, uniqueSuffix + path.extname(file.originalname));
-    }
-});
-
-const upload = multer({ storage: storage });
-
 // Create post route
-router.post('/', authenticateToken, upload.array('images', 5), async (req, res) => {
+router.post('/', authenticateToken, async (req, res) => {
     try {
         console.log('Request body:', req.body);
-        console.log('Files:', req.files);
+        console.log('Images received:', req.body.images ? req.body.images.length : 0);
+        console.log('First image sample:', req.body.images ? req.body.images[0]?.substring(0, 100) + '...' : 'No images');
 
         // Validate required fields
-        if (!req.body.name || !req.body.description || !req.body.location || !req.body.phoneNumber) {
+        if (!req.body.name || !req.body.description || !req.body.location || !req.body.phoneNumber || !req.body.images) {
             return res.status(400).json({ 
                 message: 'Missing required fields',
                 received: req.body 
             });
         }
 
-        // Process uploaded files
-        const imagePaths = req.files ? req.files.map(file => file.path) : [];
-
-        // Create new post
+        // Create new post with base64 images
         const newPost = new Post({
             name: req.body.name,
             description: req.body.description,
             location: req.body.location,
             phoneNumber: req.body.phoneNumber,
-            images: imagePaths,
+            images: req.body.images, // Array of base64 strings
             user: req.user.userId
         });
 
         // Save post
         const savedPost = await newPost.save();
         console.log('Saved post:', savedPost);
+        console.log('Saved images count:', savedPost.images.length);
+        console.log('First saved image sample:', savedPost.images[0]?.substring(0, 100) + '...');
 
         res.status(201).json(savedPost);
     } catch (error) {
@@ -65,9 +50,10 @@ router.post('/', authenticateToken, upload.array('images', 5), async (req, res) 
 router.get('/', async (req, res) => {
     try {
         const posts = await Post.find().sort({ createdAt: -1 });
-        res.status(200).json(posts);
+        res.json(posts);
     } catch (error) {
-        res.status(500).json({ message: error.message });
+        console.error('Error fetching posts:', error);
+        res.status(500).json({ error: 'Error fetching posts' });
     }
 });
 
