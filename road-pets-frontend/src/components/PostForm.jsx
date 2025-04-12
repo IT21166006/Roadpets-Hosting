@@ -29,7 +29,7 @@ const PostForm = () => {
             }
 
             try {
-                const response = await axios.get('https://roadpets-hosting-h9gv.onrender.com/api/protected/dashboard', {
+                const response = await axios.get('http://localhost:5000/api/protected/dashboard', {
                     headers: {
                         'Authorization': `Bearer ${token}`
                     }
@@ -63,13 +63,27 @@ const PostForm = () => {
 
     // Initialize Cropper.js when images are loaded
     useEffect(() => {
+        // Clear any existing cropper instances
+        cropperRefs.current.forEach((cropper) => {
+            if (cropper) {
+                cropper.destroy();
+            }
+        });
+        cropperRefs.current = [];
+        
+        // Initialize new cropper instances for each image
         images.forEach((imageSrc, index) => {
             if (imageSrc && imageRefs.current[index]) {
-                cropperRefs.current[index] = new Cropper(imageRefs.current[index], {
-                    aspectRatio: 4 / 5,
-                    viewMode: 1,
-                    autoCropArea: 1,
-                });
+                // Add a small delay to ensure the image is fully loaded
+                setTimeout(() => {
+                    if (imageRefs.current[index]) {
+                        cropperRefs.current[index] = new Cropper(imageRefs.current[index], {
+                            aspectRatio: 4 / 5,
+                            viewMode: 1,
+                            autoCropArea: 1,
+                        });
+                    }
+                }, 100);
             }
         });
 
@@ -91,6 +105,15 @@ const PostForm = () => {
 
     const handleImageChange = (e) => {
         const files = Array.from(e.target.files);
+        
+        // Clear any existing cropper instances to avoid memory leaks
+        cropperRefs.current.forEach((cropper) => {
+            if (cropper) {
+                cropper.destroy();
+            }
+        });
+        cropperRefs.current = [];
+        
         const fileReaders = files.map((file) => {
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -100,8 +123,14 @@ const PostForm = () => {
         });
 
         Promise.all(fileReaders).then((results) => {
+            // Set the original images
             setImages(results);
-            setCroppedImages(new Array(results.length).fill(null)); // Initialize cropped images array
+            
+            // Initialize cropped images array with null values
+            setCroppedImages(new Array(results.length).fill(null));
+            
+            // Reset image refs array to match the new number of images
+            imageRefs.current = new Array(results.length).fill(null);
         });
     };
 
@@ -112,16 +141,23 @@ const PostForm = () => {
                 height: 500,
             });
 
-            croppedCanvas.toBlob((blob) => {
-                if (blob) {
-                    const updatedCroppedImages = [...croppedImages];
-                    updatedCroppedImages[index] = blob; // Store the cropped image blob
-                    setCroppedImages(updatedCroppedImages);
-                    alert(`Image ${index + 1} cropped successfully!`);
-                } else {
-                    alert('Failed to crop the image. Please try again.');
+            const base64Image = croppedCanvas.toDataURL('image/jpeg');
+            
+            // Create a new array with the same length as the original images array
+            const updatedCroppedImages = new Array(images.length).fill(null);
+            
+            // Copy any existing cropped images
+            croppedImages.forEach((img, i) => {
+                if (img !== null) {
+                    updatedCroppedImages[i] = img;
                 }
-            }, 'image/jpeg');
+            });
+            
+            // Set the newly cropped image at the correct index
+            updatedCroppedImages[index] = base64Image;
+            
+            setCroppedImages(updatedCroppedImages);
+            alert(`Image ${index + 1} cropped successfully!`);
         }
     };
 
@@ -145,43 +181,49 @@ const PostForm = () => {
         }
 
         try {
-            const formData = new FormData();
-            formData.append('name', name);
-            formData.append('description', description);
-            formData.append('location', location);
-            formData.append('phoneNumber', phoneNumber); // Add phone number
-
-            // Handle cropped images if available, otherwise use original images
-            if (croppedImages.length > 0) {
-                croppedImages.forEach((blob, index) => {
-                    if (blob) {
-                        formData.append('images', blob, `image-${index}.jpg`);
-                    }
-                });
+            // Use cropped images if available, otherwise use original images
+            let imagesToSubmit = [];
+            
+            // Check if we have cropped images
+            if (croppedImages.some(img => img !== null)) {
+                // Filter out null values from croppedImages
+                imagesToSubmit = croppedImages.filter(img => img !== null);
             } else {
-                // Convert base64 images to blobs and append
-                for (let i = 0; i < images.length; i++) {
-                    const base64Response = await fetch(images[i]);
-                    const blob = await base64Response.blob();
-                    formData.append('images', blob, `image-${i}.jpg`);
-                }
+                // Use original images
+                imagesToSubmit = [...images];
             }
+            
+            // Ensure we don't have duplicate images
+            const uniqueImages = [...new Set(imagesToSubmit)];
+            
+            console.log('Submitting images:', uniqueImages.length);
+            console.log('First image sample:', uniqueImages[0]?.substring(0, 100) + '...');
 
-            // Log formData contents for debugging
-            for (let pair of formData.entries()) {
-                console.log(pair[0] + ': ' + pair[1]);
-            }
+            const postData = {
+                name,
+                description,
+                location,
+                phoneNumber,
+                images: uniqueImages
+            };
+
+            console.log('Post data being sent:', {
+                ...postData,
+                images: `Array of ${uniqueImages.length} images`
+            });
 
             const response = await axios.post(
-                'https://roadpets-hosting-h9gv.onrender.com/api/posts',
-                formData,
+                'http://localhost:5000/api/posts',
+                postData,
                 {
                     headers: {
                         'Authorization': `Bearer ${token}`,
-                        'Content-Type': 'multipart/form-data'
+                        'Content-Type': 'application/json'
                     }
                 }
             );
+
+            console.log('Response from server:', response.data);
 
             if (response.data) {
                 navigate('/');
@@ -191,7 +233,6 @@ const PostForm = () => {
             const errorMessage = error.response?.data?.message || 'Failed to create post';
             setError(errorMessage);
 
-            // Log detailed error information
             if (error.response) {
                 console.error('Error response:', error.response.data);
             }
@@ -235,7 +276,7 @@ const PostForm = () => {
                                     id="phoneNumber"
                                     className="form-control"
                                     value={phoneNumber}
-                                    onChange={(e) => setPhoneNumber(e.target.value)}
+                                    onChange={handlePhoneChange}
                                     required
 
                                     placeholder="Enter phone number"
