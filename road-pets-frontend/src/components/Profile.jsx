@@ -12,13 +12,12 @@ const defaultPostAvatar = "https://upload.wikimedia.org/wikipedia/commons/9/99/S
 
 // Random avatars for user profile
 const profileAvatars = [
-    "https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg",
-    "https://img.freepik.com/free-vector/young-woman-avatar-character-vector-illustration-design_24877-18514.jpg",
-    "https://img.freepik.com/free-vector/cute-cat-avatar-character-vector-illustration-design_24877-18515.jpg",
-    "https://img.freepik.com/free-vector/cute-dog-avatar-character-vector-illustration-design_24877-18516.jpg",
-    "https://img.freepik.com/free-vector/cute-rabbit-avatar-character-vector-illustration-design_24877-18517.jpg",
-    "https://img.freepik.com/free-vector/cute-bird-avatar-character-vector-illustration-design_24877-18518.jpg",
-    "https://img.freepik.com/free-vector/cute-fish-avatar-character-vector-illustration-design_24877-18519.jpg"
+    "https://i.ibb.co/gM2bXPJB/1.png",
+    "https://i.ibb.co/x8hFLfVN/2.png",
+    "https://i.ibb.co/HDfgyWzq/3.png",
+    "https://i.ibb.co/TD4ykN4b/4.png",
+    "https://i.ibb.co/RkMSD2c3/5.png",
+    "https://i.ibb.co/jk72Gt8w/6.png"
 ];
 
 function Profile() {
@@ -55,7 +54,7 @@ function Profile() {
 
             try {
                 // Fetch user profile
-                const userResponse = await axios.get('https://roadpets-hosting-h9gv.onrender.com/api/protected/dashboard', {
+                const userResponse = await axios.get('http://localhost:5000/api/protected/dashboard', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -70,7 +69,7 @@ function Profile() {
                 }
 
                 // Fetch user's posts
-                const postsResponse = await axios.get('https://roadpets-hosting-h9gv.onrender.com/api/posts/user', {
+                const postsResponse = await axios.get('http://localhost:5000/api/posts/user', {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -116,7 +115,7 @@ function Profile() {
         try {
             const token = localStorage.getItem('token');
             const response = await axios.put(
-                `https://roadpets-hosting-h9gv.onrender.com/api/posts/${currentPost._id}`,
+                `http://localhost:5000/api/posts/${currentPost._id}`,
                 formData,
                 {
                     headers: {
@@ -140,7 +139,7 @@ function Profile() {
         if (window.confirm('Are you sure you want to delete this post?')) {
             try {
                 const token = localStorage.getItem('token');
-                await axios.delete(`https://roadpets-hosting-h9gv.onrender.com/api/posts/${postId}`, {
+                await axios.delete(`http://localhost:5000/api/posts/${postId}`, {
                     headers: {
                         'Authorization': `Bearer ${token}`,
                         'Content-Type': 'application/json'
@@ -257,7 +256,7 @@ function Profile() {
                                 {post.images && post.images.length > 0 && (
                                     <div className="mb-3">
                                         <img
-                                            src={`https://roadpets-hosting-h9gv.onrender.com/${post.images[0]}`}
+                                            src={post.images[0]}
                                             alt="Post"
                                             className="img-fluid rounded"
                                             style={{ maxHeight: '200px', objectFit: 'cover' }}
